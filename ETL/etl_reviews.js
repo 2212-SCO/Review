@@ -43,7 +43,9 @@ class CSVCleaner extends Transform {
 
     //convert the date to a string in the format that can be used with 'timestamp' data type in postgreSQL
     let date = new Date(parseInt(chunk.date));
-    let dateString = date.toISOString().slice(0, 19).replace('T', ' ');
+    // let dateString = date.toISOString().slice(0, 19).replace('T', ' ');
+    let dateString = date.toISOString();
+
 
     chunk.date = dateString;
 

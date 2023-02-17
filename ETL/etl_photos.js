@@ -11,6 +11,7 @@ const csvStringifier = createCsvStringifier(
     ],
   });
 
+
 let readStream = fs.createReadStream('./raw_data/reviews_photos.csv');
 let writeStream = fs.createWriteStream('./parsed_data/reviews_photos.csv');
 

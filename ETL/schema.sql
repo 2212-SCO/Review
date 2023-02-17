@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   id SERIAL PRIMARY KEY,
   product_id varchar(10),
   rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
-  "date" timestamp NOT NULL,
+  "date" timestamptz NOT NULL,
   summary text not null,
   body text not null,
   recommend boolean not null,
@@ -38,11 +38,11 @@ CREATE TABLE IF NOT EXISTS characteristic_reviews (
   "value" SMALLINT CHECK (value BETWEEN 1 AND 5)
 );
 
-CREATE INDEX idx_product_id ON reviews (product_id);
-CREATE INDEX idx_review_id ON photos (review_id);
+CREATE INDEX idx_product_id_r ON reviews (product_id);
+CREATE INDEX idx_review_id_p ON photos (review_id);
 CREATE INDEX idx_product_id_c ON characteristics (product_id);
-CREATE INDEX idx_review_id_c ON characteristic_reviews (review_id);
-CREATE INDEX idx_characteristic_id ON characteristic_reviews (characteristic_id);
+CREATE INDEX idx_review_id_cr ON characteristic_reviews (review_id);
+CREATE INDEX idx_characteristic_id_cr ON characteristic_reviews (characteristic_id);
 
 SELECT * FROM pg_indexes WHERE tablename = 'reviews';
 SELECT * FROM pg_indexes WHERE tablename = 'photos';
@@ -51,5 +51,8 @@ SELECT * FROM pg_indexes WHERE tablename = 'characteristic_reviews';
 
 
 \COPY reviews from './parsed_data/reviews.csv' WITH (FORMAT csv, HEADER true);
+\COPY photos from './parsed_data/reviews_photos.csv' WITH (FORMAT csv, HEADER true);
+\COPY characteristics from './parsed_data/characteristics.csv' WITH (FORMAT csv, HEADER true);
+\COPY characteristic_reviews from './parsed_data/characteristic_reviews.csv' WITH (FORMAT csv, HEADER true);
 
-SELECT * FROM reviews;
+-- SELECT * FROM reviews;
