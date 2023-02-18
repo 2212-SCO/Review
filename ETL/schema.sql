@@ -4,37 +4,37 @@
   /* Describe your table here.*/
 
 CREATE TABLE IF NOT EXISTS reviews (
-  id SERIAL PRIMARY KEY,
-  product_id varchar(10),
+  review_id SERIAL PRIMARY KEY,
+  product_id INTEGER NOT NULL,
   rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
-  "date" timestamptz NOT NULL,
-  summary text not null,
-  body text not null,
-  recommend boolean not null,
-  reported boolean not null,
-  review_name varchar(60) not null,
-  reviewer_email varchar(255) not null,
-  response text default null,
+  "date" TIMESTAMPTZ NOT NULL,
+  summary TEXT NOT NULL,
+  body TEXT NOT NULL,
+  recommend BOOLEAN NOT NULL,
+  reported BOOLEAN DEFAULT false,
+  review_name VARCHAR(60) NOT NULL,
+  reviewer_email VARCHAR(255) NOT NULL,
+  response TEXT DEFAULT NULL,
   helpfulness INTEGER NOT NULL
 );
 
 /* Create other tables and define schemas for them here! */
 CREATE TABLE IF NOT EXISTS photos (
   id SERIAL PRIMARY KEY,
-  review_id INTEGER NOT NULL REFERENCES reviews (id),
-  "url" text not null
+  review_id INTEGER NOT NULL REFERENCES reviews (review_id),
+  "url" TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS characteristics (
   id SERIAL PRIMARY KEY,
   product_id INTEGER NOT NULL,
-  "name" varchar(10) not null
+  "name" VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS characteristic_reviews (
   id SERIAL PRIMARY KEY,
   characteristic_id INTEGER NOT NULL REFERENCES characteristics (id),
-  review_id INTEGER NOT NULL REFERENCES reviews (id),
+  review_id INTEGER NOT NULL REFERENCES reviews (review_id),
   "value" SMALLINT CHECK (value BETWEEN 1 AND 5)
 );
 
@@ -44,10 +44,13 @@ CREATE INDEX idx_product_id_c ON characteristics (product_id);
 CREATE INDEX idx_review_id_cr ON characteristic_reviews (review_id);
 CREATE INDEX idx_characteristic_id_cr ON characteristic_reviews (characteristic_id);
 
-SELECT * FROM pg_indexes WHERE tablename = 'reviews';
-SELECT * FROM pg_indexes WHERE tablename = 'photos';
-SELECT * FROM pg_indexes WHERE tablename = 'characteristics';
-SELECT * FROM pg_indexes WHERE tablename = 'characteristic_reviews';
+-- SELECT * FROM pg_indexes WHERE tablename = 'reviews';
+-- SELECT * FROM pg_indexes WHERE tablename = 'photos';
+-- SELECT * FROM pg_indexes WHERE tablename = 'characteristics';
+-- SELECT * FROM pg_indexes WHERE tablename = 'characteristic_reviews';
+
+-- SELECT * FROM reviews WHERE product_id = 1;
+
 
 
 \COPY reviews from './parsed_data/reviews.csv' WITH (FORMAT csv, HEADER true);
@@ -56,3 +59,23 @@ SELECT * FROM pg_indexes WHERE tablename = 'characteristic_reviews';
 \COPY characteristic_reviews from './parsed_data/characteristic_reviews.csv' WITH (FORMAT csv, HEADER true);
 
 -- SELECT * FROM reviews;
+-- SELECT * FROM reviews WHERE product_id = 24 ORDER BY helpfulness DESC LIMIT 5 OFFSET 0;
+
+-- SELECT * FROM photos WHERE review_id = 5;
+
+-- SELECT reviews.*, photos."url"
+-- FROM reviews
+-- LEFT JOIN photos ON reviews.id = photos.review_id
+-- WHERE product_id = 2;
+
+-- EXPLAIN ANALYZE SELECT
+--   r.*,
+--   array_to_json(array_remove(array_agg(photos), NULL)) as photos
+-- FROM
+--     reviews, r
+--     LEFT JOIN photos ON r.review_id = photos.review_id
+-- WHERE
+--     product_id = 2 AND reported = false
+-- GROUP BY
+--     r.review_id
+-- ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
