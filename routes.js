@@ -5,7 +5,7 @@ const controllers = require('./controllers');
 
 const router = express.Router();
 
-// router.get('/reviews/meta', controllers.reviews.getReviewMetaData);
+router.get('/reviews/meta', controllers.reviews.getReviewMetaData);
 
 router.get('/reviews', controllers.reviews.getReviewsByProduct);
 

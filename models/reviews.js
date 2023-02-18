@@ -27,13 +27,30 @@ module.exports = {
         }
         callback(null, data)
       })
-  };
-  getMeta: function(query, callback) {
+  },
+
+  getMeta: function (query, callback) {
     let { product_id } = query;
-
-
-
-
-  };
+    //calculate rating distribution
+    const params = [product_id];
+    var queryString1 = `WITH ratings_d AS ( SELECT product_id, rating, count(rating) as frequency FROM reviews WHERE product_id = $1 GROUP BY product_id, rating ), recommended_d AS ( SELECT product_id, recommend, count(recommend) as frequency FROM reviews WHERE product_id = $1 GROUP BY product_id, recommend ), characteristic_d AS ( SELECT c.product_id, c."name", jsonb_build_object('id', c.id, 'value', AVG(cr."value")) AS avgvalue FROM characteristic_reviews cr JOIN reviews r ON r.review_id = cr.review_id JOIN characteristics c ON cr.characteristic_id = c.id WHERE c.product_id = $1 GROUP BY c.product_id, c.id, c."name" )`;
+    var queryString2 = `SELECT ratings_d.product_id, jsonb_object_agg(ratings_d.rating, ratings_d.frequency) AS ratings, jsonb_object_agg(recommended_d.recommend, recommended_d.frequency) AS recommended, jsonb_object_agg(characteristic_d.name, characteristic_d.avgvalue) AS characteristics FROM ratings_d JOIN recommended_d ON ratings_d.product_id = recommended_d.product_id JOIN characteristic_d ON ratings_d.product_id = characteristic_d.product_id GROUP BY ratings_d.product_id`;
+    var queryString = queryString1 + queryString2;
+    db.query(queryString, params)
+      .catch(err => callback(err.stack, null))
+      .then(res => {
+        if (res.rows.length === 0) {
+          const obj = {
+            "product_id": product_id,
+            "ratings": {},
+            "recommended": {},
+            "characteristics": {}
+          }
+          callback(null, obj)
+        } else {
+          callback(null, res.rows)
+        }
+      })
+  }
 
 };
