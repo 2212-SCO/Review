@@ -26,18 +26,6 @@ module.exports = {
     });
   },
 
-  setHelpfulReview: (req, res) => {
-    models.reviews.setHelpful( req.params, (err, data) => {
-      if (err) {
-        res.sendStatus(400);
-        console.log('error with update helpful: ', err);
-      } else {
-        console.log('PUT: ', data);
-        res.status(204).json(data);
-      }
-    });
-  },
-
   addReview: (req, res) => {
     models.reviews.postReview( req.body, (err, data) => {
       if (err) {
@@ -46,6 +34,18 @@ module.exports = {
       } else {
         console.log('POST: ', data);
         res.status(201).json(data);
+      }
+    });
+  },
+
+  setHelpfulReview: (req, res) => {
+    models.reviews.setHelpful( req.params, (err, data) => {
+      if (err) {
+        res.sendStatus(400);
+        console.log('error with update helpful: ', err);
+      } else {
+        console.log('PUT: ', data);
+        res.status(204).json(data);
       }
     });
   },
