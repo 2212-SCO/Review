@@ -36,6 +36,10 @@ class CSVCleaner extends Transform {
       if (key !== trimKey) { delete chunk[key]; }
     }
 
+    if (chunk.response === "null") {
+      chunk.response = "";
+    }
+
     //filters out all non-number characters
     chunk.id = chunk.id.replace(/\D/g, '');
     chunk.product_id = chunk.product_id.replace(/\D/g, '');

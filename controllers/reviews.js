@@ -27,72 +27,38 @@ module.exports = {
   },
 
   setHelpfulReview: (req, res) => {
-    const { review_id } = req.body;
-    const url = `/reviews/${review_id}/helpful`;
-    const options = {
-      method: 'put',
-      baseURL,
-      url,
-      headers: {
-        Authorization: process.env.API_KEY,
-      },
-      data: {
-        helpfulness: req.body.helpfulness += 1,
-      },
-    };
-
-    axios(options)
-      .then(() => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(404);
-      });
+    models.reviews.setHelpful( req.params, (err, data) => {
+      if (err) {
+        res.sendStatus(400);
+        console.log('error with update helpful: ', err);
+      } else {
+        console.log('PUT: ', data);
+        res.status(204).json(data);
+      }
+    });
   },
 
   addReview: (req, res) => {
-    const url = '/reviews';
-    const options = {
-      method: 'post',
-      baseURL,
-      url,
-      headers: {
-        Authorization: process.env.API_KEY,
-      },
-      data: req.body,
-    };
-
-    axios(options)
-      .then((result) => {
-        res.status(201).send(result.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(404);
-      });
+    models.reviews.postReview( req.body, (err, data) => {
+      if (err) {
+        res.sendStatus(400);
+        console.log('error with post review: ', err);
+      } else {
+        console.log('POST: ', data);
+        res.status(201).json(data);
+      }
+    });
   },
 
   reportReview: (req, res) => {
-    const { review_id } = req.body;
-    const url = `/reviews/${review_id}/report`;
-
-    const options = {
-      method: 'put',
-      baseURL,
-      url,
-      headers: {
-        Authorization: process.env.API_KEY,
-      },
-    };
-
-    axios(options)
-      .then((results) => {
-        res.status(204).json(results.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(404);
-      });
-  },
+    models.reviews.setReport( req.params, (err, data) => {
+      if (err) {
+        res.sendStatus(400);
+        console.log('error with report: ', err);
+      } else {
+        console.log('PUT: ', data);
+        res.status(204).json(data);
+      }
+    });
+  }
 };
