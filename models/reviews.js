@@ -64,7 +64,7 @@ module.exports = {
 
   setReport: function (query, callback) {
     const { review_id } = query;
-    console.log('review_id: ', review_id);
+    // console.log('review_id: ', review_id);
     const params = [review_id];
     var queryString = `UPDATE reviews SET reported = true WHERE review_id = $1`;
     db.query(queryString, params)
@@ -74,7 +74,7 @@ module.exports = {
 
   postReview: async function (query, callback) {
     try {
-      console.log('review: ', query);
+      // console.log('review: ', query);
       const params = [query.product_id, query.rating, query.summary, query.body, query.recommend, query.name, query.email];
 
       // First, insert into the `reviews` table
@@ -85,7 +85,7 @@ module.exports = {
       const review_id = reviewInsertResult.rows[0].review_id;
 
       // Second, insert into the `photos` table
-      console.log('query.photos.length: ', query.photos.length)
+      // console.log('query.photos.length: ', query.photos.length)
       if (query.photos.length) {
         var queryString2 = `INSERT INTO photos (review_id, url) VALUES `;
 
@@ -97,7 +97,7 @@ module.exports = {
           }
         }
         queryString2 += `;`;
-        console.log('queryString2: ', queryString2);
+        // console.log('queryString2: ', queryString2);
         await db.query(queryString2);
       }
 
@@ -110,7 +110,7 @@ module.exports = {
             queryString3 += ',';
         }
         queryString3 = queryString3.slice(0, queryString3.length - 1);
-        console.log('queryString3: ', queryString3);
+        // console.log('queryString3: ', queryString3);
         await db.query(queryString3);
       }
       callback(null, 'posted');

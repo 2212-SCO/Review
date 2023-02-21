@@ -3,11 +3,11 @@ const models = require('../models');
 
 module.exports = {
   getReviewMetaData: (req, res) => {
-    console.log('IM IN CONTROLLER');
+    // console.log('IM IN CONTROLLER');
     models.reviews.getMeta( req.query, (err, data) => {
       if (err) {
         res.sendStatus(400);
-        console.log('error with getting reviews meta: ', err);
+        // console.log('error with getting reviews meta: ', err);
       } else {
         res.status(200).json(data);
       }
@@ -15,11 +15,11 @@ module.exports = {
   },
 
   getReviewsByProduct: (req, res) => {
-    console.log('IM IN CONTROLLER');
+    // console.log('IM IN CONTROLLER');
     models.reviews.getAll( req.query, (err, reviews) => {
       if (err) {
         res.sendStatus(400);
-        console.log('error with getting reviews: ', err);
+        // console.log('error with getting reviews: ', err);
       } else {
         res.status(200).json(reviews);
       }
@@ -30,9 +30,9 @@ module.exports = {
     models.reviews.postReview( req.body, (err, data) => {
       if (err) {
         res.sendStatus(400);
-        console.log('error with post review: ', err);
+        // console.log('error with post review: ', err);
       } else {
-        console.log('POST: ', data);
+        // console.log('POST: ', data);
         res.status(201).json(data);
       }
     });
@@ -42,9 +42,9 @@ module.exports = {
     models.reviews.setHelpful( req.params, (err, data) => {
       if (err) {
         res.sendStatus(400);
-        console.log('error with update helpful: ', err);
+        // console.log('error with update helpful: ', err);
       } else {
-        console.log('PUT: ', data);
+        // console.log('PUT: ', data);
         res.status(204).json(data);
       }
     });
@@ -54,9 +54,9 @@ module.exports = {
     models.reviews.setReport( req.params, (err, data) => {
       if (err) {
         res.sendStatus(400);
-        console.log('error with report: ', err);
+        // console.log('error with report: ', err);
       } else {
-        console.log('PUT: ', data);
+        // console.log('PUT: ', data);
         res.status(204).json(data);
       }
     });
