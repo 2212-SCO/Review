@@ -14,7 +14,12 @@ module.exports = {
     } else {
       var sortBy = 'ORDER BY r.date DESC, r.helpfulness DESC';
     }
-    var queryString = `SELECT r.*, array_to_json(array_remove(array_agg(photos), NULL)) as photos FROM reviews r LEFT JOIN photos ON r.review_id = photos.review_id WHERE product_id = $1 AND reported = false GROUP BY r.review_id ${sortBy} LIMIT $2 OFFSET $3`;
+    // var queryString = `SELECT r.*, array_to_json(array_remove(array_agg(photos), NULL)) as photos FROM reviews r LEFT JOIN photos ON r.review_id = photos.review_id WHERE product_id = $1 AND reported = false GROUP BY r.review_id ${sortBy} LIMIT $2 OFFSET $3`;
+
+    var queryString = `SELECT r.*, (SELECT COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]') FROM photos p WHERE p.review_id = r.review_id) as photos FROM reviews r WHERE product_id = $1 AND reported = false GROUP BY r.review_id ${sortBy} LIMIT $2 OFFSET $3`;
+
+    // var queryString = `SELECT r.*, COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]') as photos FROM reviews r LEFT JOIN photos p ON p.review_id = r.review_id WHERE r.product_id = $1 AND r.reported = false GROUP BY r.review_id ${sortBy} LIMIT $2 OFFSET $3`;
+
     db.query(queryString, params)
       .catch(err => callback(err.stack, null))
       .then(res => {
@@ -107,7 +112,7 @@ module.exports = {
         var queryString3 = `INSERT INTO characteristic_reviews (characteristic_id, review_id, value) VALUES `;
         for (let [key, value] of Object.entries(characteristics)) {
           queryString3 += `(${key}, ${review_id}, ${value})`;
-            queryString3 += ',';
+          queryString3 += ',';
         }
         queryString3 = queryString3.slice(0, queryString3.length - 1);
         // console.log('queryString3: ', queryString3);

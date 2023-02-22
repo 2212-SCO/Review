@@ -52,7 +52,7 @@ CREATE INDEX idx_characteristic_id_cr ON characteristic_reviews (characteristic_
 -- SELECT * FROM pg_indexes WHERE tablename = 'characteristics';
 -- SELECT * FROM pg_indexes WHERE tablename = 'characteristic_reviews';
 
--- SELECT * FROM reviews WHERE product_id = 1;
+-- SELECT * FROM reviews WHERE product_id = 1000011;
 
 
 
@@ -86,14 +86,43 @@ FROM
     reviews r
     LEFT JOIN photos ON r.review_id = photos.review_id
 WHERE
-    product_id = 8 AND reported = false
+    product_id = 1000011 AND reported = false
 GROUP BY
     r.review_id
 ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
 
+EXPLAIN ANALYZE
+SELECT
+  r.*,
+(
+    SELECT COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]')
+    FROM photos p
+    WHERE p.review_id = r.review_id
+) as photos
+  FROM
+    reviews r
+WHERE
+    product_id = 1000011 AND reported = false
+GROUP BY
+    r.review_id
+ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
+
+SELECT
+  r.*,
+  COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]') as photos
+FROM
+  reviews r
+  LEFT JOIN photos p ON p.review_id = r.review_id
+WHERE
+  r.product_id = 1000011 AND r.reported = false
+GROUP BY
+  r.review_id
+ORDER BY
+  r.date DESC, r.helpfulness DESC
+LIMIT 5 OFFSET 0;
 
 -- /* calculate metadata! */
-WITH ratings_d AS ( SELECT product_id, rating, count(rating) as frequency FROM reviews WHERE product_id = 1 AND reported = false GROUP BY product_id, rating ), recommended_d AS ( SELECT product_id, recommend, count(recommend) as frequency FROM reviews WHERE product_id = 1 AND reported = false GROUP BY product_id, recommend ), characteristic_d AS ( SELECT c.product_id, c."name", jsonb_build_object('id', c.id, 'value', AVG(cr."value")) AS avgvalue FROM characteristic_reviews cr JOIN reviews r ON r.review_id = cr.review_id AND r.reported = false AND r.product_id = 1 JOIN characteristics c ON cr.characteristic_id = c.id WHERE c.product_id = 1 GROUP BY c.product_id, c.id, c."name" )SELECT ratings_d.product_id, jsonb_object_agg(ratings_d.rating, ratings_d.frequency) AS ratings, jsonb_object_agg(recommended_d.recommend, recommended_d.frequency) AS recommended, jsonb_object_agg(characteristic_d.name, characteristic_d.avgvalue) AS characteristics FROM ratings_d JOIN recommended_d ON ratings_d.product_id = recommended_d.product_id JOIN characteristic_d ON ratings_d.product_id = characteristic_d.product_id GROUP BY ratings_d.product_id;
+WITH ratings_d AS ( SELECT product_id, rating, count(rating) as frequency FROM reviews WHERE product_id = 1000011 AND reported = false GROUP BY product_id, rating ), recommended_d AS ( SELECT product_id, recommend, count(recommend) as frequency FROM reviews WHERE product_id = 1000011 AND reported = false GROUP BY product_id, recommend ), characteristic_d AS ( SELECT c.product_id, c."name", jsonb_build_object('id', c.id, 'value', AVG(cr."value")) AS avgvalue FROM characteristic_reviews cr JOIN reviews r ON r.review_id = cr.review_id AND r.reported = false AND r.product_id = 1000011 JOIN characteristics c ON cr.characteristic_id = c.id WHERE c.product_id = 1000011 GROUP BY c.product_id, c.id, c."name" )SELECT ratings_d.product_id, jsonb_object_agg(ratings_d.rating, ratings_d.frequency) AS ratings, jsonb_object_agg(recommended_d.recommend, recommended_d.frequency) AS recommended, jsonb_object_agg(characteristic_d.name, characteristic_d.avgvalue) AS characteristics FROM ratings_d JOIN recommended_d ON ratings_d.product_id = recommended_d.product_id JOIN characteristic_d ON ratings_d.product_id = characteristic_d.product_id GROUP BY ratings_d.product_id;
 
 -- /* insert or update metadata! */
 -- WITH ratings_d AS ( SELECT product_id, rating, count(rating) as frequency FROM reviews WHERE product_id = 40353 GROUP BY product_id, rating ), recommended_d AS ( SELECT product_id, recommend, count(recommend) as frequency FROM reviews WHERE product_id = 40353 GROUP BY product_id, recommend ), characteristic_d AS ( SELECT c.product_id, c."name", jsonb_build_object('id', c.id, 'value', AVG(cr."value")) AS avgvalue FROM characteristic_reviews cr JOIN reviews r ON r.review_id = cr.review_id JOIN characteristics c ON cr.characteristic_id = c.id WHERE c.product_id = 40353 GROUP BY c.product_id, c.id, c."name" ) INSERT INTO reviews_meta (product_id, ratings, recommended, characteristics) SELECT ratings_d.product_id, jsonb_object_agg(ratings_d.rating, ratings_d.frequency), jsonb_object_agg(recommended_d.recommend, recommended_d.frequency), jsonb_object_agg(characteristic_d.name, characteristic_d.avgvalue) FROM ratings_d JOIN recommended_d ON ratings_d.product_id = recommended_d.product_id JOIN characteristic_d ON ratings_d.product_id = characteristic_d.product_id GROUP BY ratings_d.product_id ON CONFLICT (product_id) DO UPDATE SET ratings = EXCLUDED.ratings, recommended = EXCLUDED.recommended, characteristics = EXCLUDED.characteristics;
@@ -110,7 +139,7 @@ UPDATE reviews
 -- /* add review */
 INSERT INTO reviews (product_id, rating, summary, body, recommend, review_name, reviewer_email)
 VALUES (1, 3, 'good', 'nice', true, 'q', 'a@gmail.com');
-SELECT * FROM reviews WHERE product_id = 1;
+SELECT * FROM reviews WHERE product_id = 1000011;
 
 
 

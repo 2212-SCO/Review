@@ -1,28 +1,56 @@
-const axios = require('axios');
 const models = require('../models');
+const Redis = require('ioredis');
+// Create a Redis client instance
+const redis = new Redis({
+  port:6379,
+  host:'127.0.0.1'
+});
 
 module.exports = {
+
   getReviewMetaData: (req, res) => {
     // console.log('IM IN CONTROLLER');
-    models.reviews.getMeta( req.query, (err, data) => {
-      if (err) {
-        res.sendStatus(400);
-        // console.log('error with getting reviews meta: ', err);
-      } else {
+    const cacheKey = `reviewsMetaData:${JSON.stringify(req.query)}`;
+    // Check if the data is cached in Redis
+    redis.get(cacheKey, (err, cachedData) => {
+      if (cachedData) {
+        // If the data is cached, return it
+        const data = JSON.parse(cachedData);
         res.status(200).json(data);
+      } else {
+        models.reviews.getMeta( req.query, (err, data) => {
+          if (err) {
+            res.sendStatus(400);
+            // console.log('error with getting reviews meta: ', err);
+          } else {
+            redis.setex(cacheKey, 600, JSON.stringify(data));
+            res.status(200).json(data);
+          }
+        });
       }
     });
   },
 
   getReviewsByProduct: (req, res) => {
     // console.log('IM IN CONTROLLER');
-    models.reviews.getAll( req.query, (err, reviews) => {
-      if (err) {
-        res.sendStatus(400);
-        // console.log('error with getting reviews: ', err);
+    const cacheKey = `reviewsByProduct:${JSON.stringify(req.query)}`;
+    // Check if the data is cached in Redis
+    redis.get(cacheKey, (err, cachedData) => {
+      if (cachedData) {
+        // If the data is cached, return it
+        const data = JSON.parse(cachedData);
+        res.status(200).json(data);
       } else {
-        res.status(200).json(reviews);
-      }
+        models.reviews.getAll( req.query, (err, data) => {
+          if (err) {
+            res.sendStatus(400);
+            // console.log('error with getting reviews: ', err);
+          } else {
+            redis.setex(cacheKey, 600, JSON.stringify(data));
+            res.status(200).json(data);
+          }
+        });
+      };
     });
   },
 
