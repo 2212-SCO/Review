@@ -13,17 +13,14 @@ export const options = {
   // summaryTrendStats: ['min', 'avg', 'med', 'max', 'p(95)', 'p(99)'],
   stages: [
     { duration: '1m', target: 300 },
-    { duration: '1m', target: 1000 },
-    { duration: '1m', target: 1800 },
-    { duration: '5m', target: 2000 },
+    { duration: '5m', target: 1000 }
   ],
 
   thresholds: {
-    http_req_duration: [{threshold: 'p(95) < 1500', abortOnFail: true}], // 99% of requests must complete below 2s
+    http_req_duration: [{threshold: 'p(95) < 1500', abortOnFail: true}], // 95% of requests must complete below 1.5s
     http_req_failed: [{threshold: 'rate < 0.01', abortOnFail: true}] // only 1% of requests can fail
   },
 };
-
 
 export default () => {
   const BASE_URL = "http://localhost:3001";

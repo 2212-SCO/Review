@@ -61,11 +61,16 @@ CREATE INDEX idx_characteristic_id_cr ON characteristic_reviews (characteristic_
 \COPY characteristics from './parsed_data/characteristics.csv' WITH (FORMAT csv, HEADER true);
 \COPY characteristic_reviews from './parsed_data/characteristic_reviews.csv' WITH (FORMAT csv, HEADER true);
 
+sudo \COPY reviews from '/home/ubuntu/parsed_data/reviews.csv' WITH (FORMAT csv, HEADER true);
+\COPY photos from './parsed_data/reviews_photos.csv' WITH (FORMAT csv, HEADER true);
+\COPY characteristics from './parsed_data/characteristics.csv' WITH (FORMAT csv, HEADER true);
+\COPY characteristic_reviews from './parsed_data/characteristic_reviews.csv' WITH (FORMAT csv, HEADER true);
+
 -- SELECT * FROM pg_sequences;
-SELECT setval('reviews_review_id_seq', (SELECT MAX(review_id) FROM reviews)+1);
-SELECT setval('photos_id_seq', (SELECT MAX(id) FROM photos)+1);
-SELECT setval('characteristics_id_seq', (SELECT MAX(id) FROM characteristics)+1);
-SELECT setval('characteristic_reviews_id_seq', (SELECT MAX(id) FROM characteristic_reviews)+1);
+-- SELECT setval('reviews_review_id_seq', (SELECT MAX(review_id) FROM reviews)+1);
+-- SELECT setval('photos_id_seq', (SELECT MAX(id) FROM photos)+1);
+-- SELECT setval('characteristics_id_seq', (SELECT MAX(id) FROM characteristics)+1);
+-- SELECT setval('characteristic_reviews_id_seq', (SELECT MAX(id) FROM characteristic_reviews)+1);
 
 -- SELECT * FROM reviews;
 -- SELECT * FROM reviews WHERE product_id = 24 ORDER BY helpfulness DESC LIMIT 5 OFFSET 0;
@@ -76,50 +81,50 @@ SELECT setval('characteristic_reviews_id_seq', (SELECT MAX(id) FROM characterist
 -- FROM reviews
 -- LEFT JOIN photos ON reviews.id = photos.review_id
 -- WHERE product_id = 2;
-\timing on
+-- \timing on
 /* get review */
 
-EXPLAIN ANALYZE SELECT
-  r.*,
-  array_to_json(array_remove(array_agg(photos), NULL)) as photos
-FROM
-    reviews r
-    LEFT JOIN photos ON r.review_id = photos.review_id
-WHERE
-    product_id = 1000011 AND reported = false
-GROUP BY
-    r.review_id
-ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
+-- EXPLAIN ANALYZE SELECT
+--   r.*,
+--   array_to_json(array_remove(array_agg(photos), NULL)) as photos
+-- FROM
+--     reviews r
+--     LEFT JOIN photos ON r.review_id = photos.review_id
+-- WHERE
+--     product_id = 1000011 AND reported = false
+-- GROUP BY
+--     r.review_id
+-- ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
 
-EXPLAIN ANALYZE
-SELECT
-  r.*,
-(
-    SELECT COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]')
-    FROM photos p
-    WHERE p.review_id = r.review_id
-) as photos
-  FROM
-    reviews r
-WHERE
-    product_id = 1000011 AND reported = false
-GROUP BY
-    r.review_id
-ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
+-- EXPLAIN ANALYZE
+-- SELECT
+--   r.*,
+-- (
+--     SELECT COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]')
+--     FROM photos p
+--     WHERE p.review_id = r.review_id
+-- ) as photos
+--   FROM
+--     reviews r
+-- WHERE
+--     product_id = 1000011 AND reported = false
+-- GROUP BY
+--     r.review_id
+-- ORDER BY r.date DESC, r.helpfulness DESC LIMIT 5 OFFSET 0;
 
-SELECT
-  r.*,
-  COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]') as photos
-FROM
-  reviews r
-  LEFT JOIN photos p ON p.review_id = r.review_id
-WHERE
-  r.product_id = 1000011 AND r.reported = false
-GROUP BY
-  r.review_id
-ORDER BY
-  r.date DESC, r.helpfulness DESC
-LIMIT 5 OFFSET 0;
+-- SELECT
+--   r.*,
+--   COALESCE(json_agg(json_build_object('id', p.id, 'url', p.url)), '[]') as photos
+-- FROM
+--   reviews r
+--   LEFT JOIN photos p ON p.review_id = r.review_id
+-- WHERE
+--   r.product_id = 1000011 AND r.reported = false
+-- GROUP BY
+--   r.review_id
+-- ORDER BY
+--   r.date DESC, r.helpfulness DESC
+-- LIMIT 5 OFFSET 0;
 
 -- /* calculate metadata! */
 WITH ratings_d AS ( SELECT product_id, rating, count(rating) as frequency FROM reviews WHERE product_id = 1000011 AND reported = false GROUP BY product_id, rating ), recommended_d AS ( SELECT product_id, recommend, count(recommend) as frequency FROM reviews WHERE product_id = 1000011 AND reported = false GROUP BY product_id, recommend ), characteristic_d AS ( SELECT c.product_id, c."name", jsonb_build_object('id', c.id, 'value', AVG(cr."value")) AS avgvalue FROM characteristic_reviews cr JOIN reviews r ON r.review_id = cr.review_id AND r.reported = false AND r.product_id = 1000011 JOIN characteristics c ON cr.characteristic_id = c.id WHERE c.product_id = 1000011 GROUP BY c.product_id, c.id, c."name" )SELECT ratings_d.product_id, jsonb_object_agg(ratings_d.rating, ratings_d.frequency) AS ratings, jsonb_object_agg(recommended_d.recommend, recommended_d.frequency) AS recommended, jsonb_object_agg(characteristic_d.name, characteristic_d.avgvalue) AS characteristics FROM ratings_d JOIN recommended_d ON ratings_d.product_id = recommended_d.product_id JOIN characteristic_d ON ratings_d.product_id = characteristic_d.product_id GROUP BY ratings_d.product_id;
