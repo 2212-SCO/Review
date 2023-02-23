@@ -11,8 +11,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(router);
 
-app.use(express.static('public'));
-
+app.get(`/${process.env.LOADER_IO}`, (req, res) => {
+  res.send(process.env.LOADER_IO);
+});
 // app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.listen(PORT, () => {
