@@ -1,0 +1,98 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2708
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Bold;\f2\fnil\fcharset0 Menlo-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red44\green238\blue235;\red0\green0\blue0;\red251\green0\blue255;
+\red232\green235\blue20;\red126\green255\blue165;\red254\green212\blue213;\red94\green220\blue255;\red193\green101\blue28;
+\red47\green180\blue29;\red200\green20\blue201;\red180\green36\blue25;\red29\green226\blue223;\red46\green174\blue187;
+}
+{\*\expandedcolortbl;;\cssrgb\c15687\c93977\c93914;\csgray\c0;\cssrgb\c100000\c23499\c100000;
+\cssrgb\c92620\c92472\c8348;\cssrgb\c54881\c100000\c70443;\cssrgb\c100000\c86651\c86646;\cssrgb\c42295\c88681\c100000;\cssrgb\c80555\c47366\c13837;
+\cssrgb\c20241\c73898\c14950;\cssrgb\c83397\c23074\c82666;\cssrgb\c76411\c21697\c12527;\cssrgb\c0\c90000\c90000;\cssrgb\c20199\c73241\c78251;
+}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 reviews?product_id=%\{*:910000-1000011\}&page=1&count=4&sort=helpful\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\b\fs22 \cf2 \CocoaLigature0 proxy_cache_path
+\f2\b0 \cf3  /var/cache/nginx levels=\cf4 1\cf3 :\cf4 2\cf3  keys_zone=my_cache:\cf4 10m\cf3  inactive=\cf4 60m\cf3 ;\
+\
+\cf5 upstream\cf3  backend \{\
+    \cf6 server\cf3  \cf7 52.35.52.208\cf3 :\cf4 3000\cf3 ;\
+    \cf6 server\cf3  \cf7 18.237.95.147\cf3 :\cf4 3000\cf3 ;\
+    \cf6 server\cf3  \cf7 54.214.64.101\cf3 :\cf4 3000\cf3 ;\
+\}\
+\
+\
+\cf5 server\cf3  \{\
+    \cf6 listen\cf3  \cf4 80\cf3 ;\
+    \cf6 server_name\cf3  \cf7 35.91.107.197\cf3 ;\
+    
+\f1\b \cf2 proxy_cache
+\f2\b0 \cf3  my_cache;\
+\
+    \cf5 location\cf3  / \{\
+\
+        
+\f1\b \cf2 proxy_cache_key
+\f2\b0 \cf3  \cf4 "\cf8 $scheme$request_method$host$request_uri\cf4 "\cf3 ;\
+        
+\f1\b \cf2 proxy_cache_valid
+\f2\b0 \cf3  \cf4 200\cf3  \cf4 60m\cf3 ;\
+        
+\f1\b \cf2 proxy_cache_valid
+\f2\b0 \cf3  \cf4 404\cf3  \cf4 1m\cf3 ;\
+\
+        
+\f1\b \cf2 proxy_set_header
+\f2\b0 \cf3  Host 
+\f1\b \cf2 $host
+\f2\b0 \cf3 ;\
+        
+\f1\b \cf2 proxy_set_header
+\f2\b0 \cf3  X-Real-IP 
+\f1\b \cf2 $remote_addr
+\f2\b0 \cf3 ;\
+        
+\f1\b \cf2 proxy_set_header
+\f2\b0 \cf3  X-Forwarded-For 
+\f1\b \cf2 $proxy_add_x_forwarded_for
+\f2\b0 \cf3 ;\
+        \cf6 proxy_pass\cf3  http://backend;\
+\
+    \}\
+\
+\}\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf9 upstream\cf3  backend \{\
+    \cf10 server\cf3  \cf11 52.35.52.208\cf3 :\cf12 3000\cf3 ;\
+    \cf10 server\cf3  \cf11 18.237.95.147\cf3 :\cf12 3000\cf3 ;\
+    \cf10 server\cf3  \cf11 54.214.64.101\cf3 :\cf12 3000\cf3 ;\
+\}\
+\
+\
+\cf9 server\cf3  \{\
+    \cf10 listen\cf3  \cf12 80\cf3 ;\
+    \cf10 server_name\cf3  \cf11 35.91.107.197\cf3 ;\
+\
+\
+    \cf9 location\cf3  / \cb13 \{\cb1 \
+        \cf14 proxy_set_header\cf3  Host \cf14 $host\cf3 ;\
+        \cf14 proxy_set_header\cf3  X-Real-IP \cf14 $remote_addr\cf3 ;\
+        \cf14 proxy_set_header\cf3  X-Forwarded-For \cf14 $proxy_add_x_forwarded_for\cf3 ;\
+        \cf10 proxy_pass\cf3  http://backend;\
+\
+    \cb13 \}\cb1 \
+\
+\}\
+\
+\
+\
+\
+}
