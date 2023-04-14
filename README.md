@@ -27,6 +27,16 @@ This API defines the following routes for the Review service:
 retrieves metadata for reviews
 ### GET /reviews 
 retrieves reviews for a product
+example: 
+var config = {
+  method: 'get',
+maxBodyLength: Infinity,
+  url: 'http://localhost:3001/reviews?product_id=910001&page=1&count=4&sort=relevant',
+  headers: { 
+    'Authorization': 'xxx'
+  }
+};
+
 ### POST /reviews 
 adds a new review
 ### PUT /reviews/:review_id/helpful 
