@@ -39,7 +39,11 @@ To ensure high performance and low latency, the server was built with Node.js an
 
 To address these issues, the following optimizations were implemented:
 
-Database optimization: Indexes were added to the product ID, which resulted in a 90% reduction in single-query time, from over 1 second to less than 100 milliseconds.
-Caching implementation: A cache system was implemented using Redis for frequently accessed data. This resulted in an 80% reduction in average latency, dropping from 100ms to just 18ms, and the server could handle 1000 requests per second.
-Load balancing: The API was deployed to an EC2 micro instance on AWS, and load testing was performed to ensure it could handle high traffic loads during peak holiday seasons. A load balancer was implemented using Nginx, and two more instances were added to increase performance further. The results showed a 300% improvement in requests per second, increasing from 1000 to 4000, with error rates below one percent.
+### Database optimization
+Indexes were added to the product ID, which resulted in a 90% reduction in single-query time, from over 1 second to less than 100 milliseconds.
+### Caching implementation
+A cache system was implemented using Redis for frequently accessed data. This resulted in an 80% reduction in average latency, dropping from 100ms to just 18ms, and the server could handle 1000 requests per second.
+### Load balancing
+The API was deployed to an EC2 micro instance on AWS, and load testing was performed to ensure it could handle high traffic loads during peak holiday seasons. A load balancer was implemented using Nginx, and two more instances were added to increase performance further. The results showed a 300% improvement in requests per second, increasing from 1000 to 4000, with error rates below one percent.
+
 Overall, these optimizations resulted in a much faster and smoother review section for the e-commerce app, and provided valuable experience in database optimization and caching implementation.
