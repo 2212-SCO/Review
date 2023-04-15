@@ -25,22 +25,73 @@ This API defines the following routes for the Review service:
 
 ### GET /reviews/meta
 retrieves metadata for reviews
-### GET /reviews 
-retrieves reviews for a product
-example: 
+example:
 ```
-var config = {
+const config = {
   method: 'get',
-maxBodyLength: Infinity,
-  url: 'http://localhost:3001/reviews?product_id=910001&page=1&count=4&sort=relevant',
-  headers: { 
+  url: 'http://localhost:3001/reviews/meta',
+  params: {
+    product_id: 910001
+  },
+  headers: {
     'Authorization': 'to be filled in'
   }
 };
 ```
 
+### GET /reviews 
+retrieves reviews for a product
+example: 
+```
+const config = {
+  method: 'get',
+  url: 'http://localhost:3001/reviews',
+  params: {
+    product_id: 910001,
+    page: 1,
+    count: 4,
+    sort: 'relevant'
+  },
+  headers: {
+    'Authorization': 'to be filled in'
+  }
+};
+
+```
+
 ### POST /reviews 
 adds a new review
+example:
+```
+const data = JSON.stringify({
+  "product_id": 7,
+  "rating": 5,
+  "summary": "this is photo test",
+  "recommend": true,
+  "body": "it fits me perfectly",
+  "name": "monks",
+  "email": "q@gmail.com",
+  "photos": [
+    "https://images.unsplash.com/photo-1561861422-a549073e547a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80",
+    "https://images.unsplash.com/photo-1544376664-80b17f09d399?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1525&q=80"
+  ],
+  "characteristics": {
+    "26": 1,
+    "27": 1,
+    "28": 1,
+    "29": 1
+  }
+});
+
+const config = {
+  method: 'post',
+  url: 'http://localhost:3001/reviews/',
+  headers: { 
+    'Content-Type': 'application/json'
+  },
+  data: data
+};
+```
 ### PUT /reviews/:review_id/helpful 
 updates the helpful count for a review
 ### PUT /reviews/:review_id/report 
