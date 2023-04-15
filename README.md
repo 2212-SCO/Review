@@ -24,7 +24,7 @@ This API  is part of a full-stack application built for an e-commerce app with m
 This API defines the following routes for the Review service:
 
 ### GET /reviews/meta
-retrieves metadata for reviews
+retrieves metadata for reviews.
 example:
 ```
 const config = {
@@ -40,7 +40,7 @@ const config = {
 ```
 
 ### GET /reviews 
-retrieves reviews for a product
+retrieves reviews for a product.
 example: 
 ```
 const config = {
@@ -60,7 +60,7 @@ const config = {
 ```
 
 ### POST /reviews 
-adds a new review
+adds a new review.
 example:
 ```
 const data = JSON.stringify({
@@ -94,8 +94,24 @@ const config = {
 ```
 ### PUT /reviews/:review_id/helpful 
 updates the helpful count for a review
+```
+const config = {
+  method: 'put',
+  maxBodyLength: Infinity,
+  url: 'http://localhost:3001/reviews/5774980/helpful',
+  headers: {}
+};
+```
 ### PUT /reviews/:review_id/report 
 reports a review
+```
+const config = {
+  method: 'put',
+  maxBodyLength: Infinity,
+  url: 'http://localhost:3001/reviews/5774980/report',
+  headers: {}
+};
+```
 
 ## Optimization
 To ensure high performance and low latency, the server was built with Node.js and the database was built using PostgreSQL. However, it was discovered that the server was not performing optimally during stress testing. Two main bottlenecks were identified: slow single-query time on the database and a limited ability to handle user requests per second.
