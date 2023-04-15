@@ -113,6 +113,53 @@ const config = {
 };
 ```
 
+## Database
+The Reviews database was built with PostgreSQL and consists of four tables: reviews, photos, characteristics, and characteristic_reviews.
+
+Table Schemas
+### Reviews Table
+
+| Column Name  | Data Type    | Constraints                                  |
+|--------------|--------------|----------------------------------------------|
+| review_id    | SERIAL       | PRIMARY KEY                                  |
+| product_id   | INTEGER      | NOT NULL                                     |
+| rating       | SMALLINT     | CHECK (rating BETWEEN 1 AND 5)               |
+| date         | TIMESTAMPTZ  | DEFAULT now() NOT NULL                       |
+| summary      | TEXT         | NOT NULL                                     |
+| body         | TEXT         | NOT NULL                                     |
+| recommend    | BOOLEAN      | NOT NULL                                     |
+| reported     | BOOLEAN      | DEFAULT false                                |
+| review_name  | VARCHAR(60)  | NOT NULL                                     |
+| reviewer_email | VARCHAR(255) | NOT NULL                                   |
+| response     | TEXT         | DEFAULT NULL                                 |
+| helpfulness  | INTEGER      | DEFAULT 0                                    |
+
+### Photos Table
+
+| Column Name  | Data Type    | Constraints                                   |
+|--------------|--------------|-----------------------------------------------|
+| id           | SERIAL       | PRIMARY KEY                                   |
+| review_id    | INTEGER      | NOT NULL REFERENCES reviews (review_id)       |
+| url          | TEXT         | NOT NULL                                      |
+
+### Characteristics Table
+
+| Column Name  | Data Type    | Constraints                                   |
+|--------------|--------------|-----------------------------------------------|
+| id           | SERIAL       | PRIMARY KEY                                   |
+| product_id   | INTEGER      | NOT NULL                                      |
+| name         | VARCHAR(10)  | NOT NULL                                      |
+
+### Characteristic_Reviews Table
+
+| Column Name      | Data Type    | Constraints                                               |
+|------------------|--------------|-----------------------------------------------------------|
+| id               | SERIAL       | PRIMARY KEY                                               |
+| characteristic_id | INTEGER      | NOT NULL REFERENCES characteristics (id)                 |
+| review_id        | INTEGER      | NOT NULL REFERENCES reviews (review_id)                   |
+| value            | SMALLINT     | CHECK (value BETWEEN 1 AND 5)                             |
+
+
 ## Optimization
 To ensure high performance and low latency, the server was built with Node.js and the database was built using PostgreSQL. However, it was discovered that the server was not performing optimally during stress testing. Two main bottlenecks were identified: slow single-query time on the database and a limited ability to handle user requests per second.
 
@@ -179,51 +226,3 @@ http {
 ```
 
 Overall, these optimizations resulted in a much faster and smoother review section for the e-commerce app, and provided valuable experience in database optimization and caching implementation.
-
-### Database
-The Reviews database was built with PostgreSQL and consists of four tables: reviews, photos, characteristics, and characteristic_reviews.
-
-Table Schemas
-## Reviews Table
-
-| Column Name  | Data Type    | Constraints                                  |
-|--------------|--------------|----------------------------------------------|
-| review_id    | SERIAL       | PRIMARY KEY                                  |
-| product_id   | INTEGER      | NOT NULL                                     |
-| rating       | SMALLINT     | CHECK (rating BETWEEN 1 AND 5)              |
-| date         | TIMESTAMPTZ  | DEFAULT now() NOT NULL                       |
-| summary      | TEXT         | NOT NULL                                     |
-| body         | TEXT         | NOT NULL                                     |
-| recommend    | BOOLEAN      | NOT NULL                                     |
-| reported     | BOOLEAN      | DEFAULT false                                |
-| review_name  | VARCHAR(60)  | NOT NULL                                     |
-| reviewer_email | VARCHAR(255) | NOT NULL                                    |
-| response     | TEXT         | DEFAULT NULL                                 |
-| helpfulness  | INTEGER      | DEFAULT 0                                    |
-
-## Photos Table
-
-| Column Name  | Data Type    | Constraints                                   |
-|--------------|--------------|-----------------------------------------------|
-| id           | SERIAL       | PRIMARY KEY                                   |
-| review_id    | INTEGER      | NOT NULL REFERENCES reviews (review_id)       |
-| url          | TEXT         | NOT NULL                                      |
-
-## Characteristics Table
-
-| Column Name  | Data Type    | Constraints                                   |
-|--------------|--------------|-----------------------------------------------|
-| id           | SERIAL       | PRIMARY KEY                                   |
-| product_id   | INTEGER      | NOT NULL                                      |
-| name         | VARCHAR(10)  | NOT NULL                                      |
-
-## Characteristic_Reviews Table
-
-| Column Name      | Data Type    | Constraints                                               |
-|------------------|--------------|-----------------------------------------------------------|
-| id               | SERIAL       | PRIMARY KEY                                               |
-| characteristic_id | INTEGER      | NOT NULL REFERENCES characteristics (id)                   |
-| review_id        | INTEGER      | NOT NULL REFERENCES reviews (review_id)                   |
-| value            | SMALLINT     | CHECK (value BETWEEN 1 AND 5)                             |
-
-
