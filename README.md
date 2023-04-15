@@ -204,7 +204,7 @@ const redis = new Redis({
     });
 ```
 ### Load balancing
-The API was deployed to an EC2 micro instance on AWS, and load testing was performed to ensure it could handle high traffic loads during peak holiday seasons. A load balancer was implemented using Nginx, and two more instances were added to increase performance further. The results showed a 300% improvement in requests per second, increasing from 1000 to 4000, with error rates below one percent.
+The API was deployed to an EC2 micro instance on AWS, and stress testing was performed to ensure it could handle high traffic loads during peak holiday seasons. A load balancer was implemented using Nginx, and two more instances were added to increase performance further. The results showed a 300% improvement in requests per second, increasing from 1000 to 4000, with error rates below one percent.
 ```
 http {
   upstream app_servers {
