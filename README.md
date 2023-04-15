@@ -97,7 +97,6 @@ updates the helpful count for a review
 ```
 const config = {
   method: 'put',
-  maxBodyLength: Infinity,
   url: 'http://localhost:3001/reviews/5774980/helpful',
   headers: {}
 };
@@ -107,7 +106,6 @@ reports a review
 ```
 const config = {
   method: 'put',
-  maxBodyLength: Infinity,
   url: 'http://localhost:3001/reviews/5774980/report',
   headers: {}
 };
