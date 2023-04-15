@@ -119,7 +119,21 @@ The reviews table contains information such as the review ID, the product ID, th
 The photos table contains information about the photos associated with each review. It includes the photo ID, the review ID, and the URL of the photo.
 The characteristics table stores information about the characteristics of each product. It includes the characteristic ID, the product ID, and the name of the characteristic.
 The characteristic_reviews table links reviews with characteristics and stores the value associated with each characteristic. It includes the characteristic review ID, the characteristic ID, the review ID, and the value associated with the characteristic.
-Table Schemas
+### ETL (Extract, Transform, Load) 
+The ETL process involves the following steps:
+- Reading raw CSV data from a file located at ./raw_data/reviews.csv.
+- Cleaning and transforming the data using a Transform stream called CSVCleaner.
+- Writing the cleaned and transformed data to a new CSV file located at ./parsed_data/reviews.csv.
+
+The `CSVCleaner` class uses the Transform stream to process the input data by performing several cleaning and transformation tasks on each chunk of data. These tasks include:
+- Trimming whitespace from object keys
+- Removing non-number characters from the `id`, `product_id`, and `rating` fields
+- Converting the `date` field to a string in the format that can be used with the `timestamp` data type in PostgreSQL
+- Using the `csv-writer` package to convert the cleaned data into a CSV string format
+- Pushing the cleaned data to the next stream
+
+Finally, the cleaned and transformed data is written to a new CSV file using the `createWriteStream` method.
+
 ### Reviews Table
 
 | Column Name  | Data Type    | Constraints                                  |
