@@ -115,10 +115,7 @@ const config = {
 
 ## Database
 The Reviews database was built with PostgreSQL and consists of four tables: reviews, photos, characteristics, and characteristic_reviews.
-The reviews table contains information such as the review ID, the product ID, the rating, the date, the summary, the body, whether or not the product was recommended, if the review was reported, the name of the reviewer, the email of the reviewer, the response, and the helpfulness of the review.
-The photos table contains information about the photos associated with each review. It includes the photo ID, the review ID, and the URL of the photo.
-The characteristics table stores information about the characteristics of each product. It includes the characteristic ID, the product ID, and the name of the characteristic.
-The characteristic_reviews table links reviews with characteristics and stores the value associated with each characteristic. It includes the characteristic review ID, the characteristic ID, the review ID, and the value associated with the characteristic.
+
 ### ETL (Extract, Transform, Load) 
 The ETL process involves the following steps:
 - Reading raw CSV data from a file located at ./raw_data/reviews.csv.
@@ -134,7 +131,8 @@ The `CSVCleaner` class uses the Transform stream to process the input data by pe
 
 Finally, the cleaned and transformed data is written to a new CSV file using the `createWriteStream` method.
 
-### Reviews Table
+### Table schema
+#### Reviews Table
 
 | Column Name  | Data Type    | Constraints                                  |
 |--------------|--------------|----------------------------------------------|
@@ -151,7 +149,7 @@ Finally, the cleaned and transformed data is written to a new CSV file using the
 | response     | TEXT         | DEFAULT NULL                                 |
 | helpfulness  | INTEGER      | DEFAULT 0                                    |
 
-### Photos Table
+#### Photos Table
 
 | Column Name  | Data Type    | Constraints                                   |
 |--------------|--------------|-----------------------------------------------|
@@ -159,7 +157,7 @@ Finally, the cleaned and transformed data is written to a new CSV file using the
 | review_id    | INTEGER      | NOT NULL REFERENCES reviews (review_id)       |
 | url          | TEXT         | NOT NULL                                      |
 
-### Characteristics Table
+#### Characteristics Table
 
 | Column Name  | Data Type    | Constraints                                   |
 |--------------|--------------|-----------------------------------------------|
@@ -167,7 +165,7 @@ Finally, the cleaned and transformed data is written to a new CSV file using the
 | product_id   | INTEGER      | NOT NULL                                      |
 | name         | VARCHAR(10)  | NOT NULL                                      |
 
-### Characteristic_Reviews Table
+#### Characteristic_Reviews Table
 
 | Column Name      | Data Type    | Constraints                                               |
 |------------------|--------------|-----------------------------------------------------------|
